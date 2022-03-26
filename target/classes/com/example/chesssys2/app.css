@@ -1,0 +1,112 @@
+#username {
+    -fx-background-color: #B1D0E0;
+    -fx-background-insets: 0, 1;
+    -fx-border-radius: 3, 2;
+    -fx-background-radius: 5em;
+}
+
+#passwordField {
+    -fx-background-color: #B1D0E0;
+    -fx-font-family: "LEMON MILK";
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 3, 2;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #000000;
+}
+
+#newUsername {
+    -fx-background-color: #CBE2ED;
+    -fx-background-insets: 0, 1;
+    -fx-border-radius: 3, 2;
+    -fx-background-radius: 5em;
+    -fx-font-family: "LEMON MILK";
+}
+
+#newEmail {
+    -fx-background-color: #CBE2ED;
+    -fx-background-insets: 0, 1;
+    -fx-border-radius: 3, 2;
+    -fx-background-radius: 5em;
+    -fx-font-family: "LEMON MILK";
+}
+
+#newPassword {
+    -fx-background-color: #CBE2ED;
+    -fx-background-insets: 0, 1;
+    -fx-border-radius: 3, 2;
+    -fx-background-radius: 5em;
+    -fx-font-family: "LEMON MILK";
+}
+
+#retypedPassword {
+    -fx-background-color: #CBE2ED;
+    -fx-background-insets: 0, 1;
+    -fx-border-radius: 3, 2;
+    -fx-background-radius: 5em;
+    -fx-font-family: "LEMON MILK";
+}
+
+#welcomeLabel {
+    -fx-text-fill: #1A374D;
+}
+
+#loginButton {
+    -fx-background-color: #406882;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #B1D0E0;
+}
+
+#registerButton {
+    -fx-background-color: #406882;
+    -fx-text-fill: #7AA9BC;
+    -fx-background-radius: 5em;
+}
+
+#submitButton {
+    -fx-background-color: #406882;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #B1D0E0;
+    -fx-font-family: "LEMON MILK";
+}
+
+#errorMsg {
+    -fx-background-color: #D4483B;
+}
+
+#signUpLabel {
+    -fx-text-fill: #CBE2ED;
+}
+
+#createAccountLabel {
+    -fx-text-fill: #406882;
+}
+
+#line1 {
+    -fx-stroke: #406882;
+}
+
+#usernameLabel {
+    -fx-text-fill: #406882;
+}
+
+#emailLabel {
+    -fx-text-fill: #406882 ;
+}
+
+#passwordLabel {
+    -fx-text-fill: #406882 ;
+}
+
+#adminBox {
+    -fx-font-family: "LEMON MILK";
+    -fx-font-size: 10;
+    -fx-text-fill: #1A374D;
+}
+
+#backButton {
+    -fx-background-color: #406882;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #B1D0E0;
+    -fx-font-family: "LEMON MILK";
+
+}
