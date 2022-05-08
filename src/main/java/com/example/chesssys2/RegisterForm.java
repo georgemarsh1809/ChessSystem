@@ -10,6 +10,7 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -17,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class RegisterForm {
     private Group reg = new Group();
@@ -27,6 +29,7 @@ public class RegisterForm {
     private Connection connectDB;
 
     private TextField newUsernameField = new TextField();
+
     private TextField newEmailField = new TextField();
     private PasswordField newPasswordField = new PasswordField();
     private PasswordField retypedPasswordField = new PasswordField();
@@ -36,12 +39,17 @@ public class RegisterForm {
 
     private Label emtpyFieldsErrorLabel = new Label("Please fill in all fields before submitting.");
     private Label unmatchedPasswordsLabel = new Label("Passwords do not match. Please try again.");
+    private Label usernameAlreadyExistsError = new Label("That username is taken - please choose another");
+    private Label incorrectEmailFormatError = new Label("Please provide a valid email");
+    private Label incorrectUsernameFormatError = new Label("Please only use numbers for your requested ID");
 
     private Boolean didPasswordsMatch = false;
 
     private FontLoader fonts = new FontLoader();
 
-    public RegisterForm (Database parsedDB) {
+    public RegisterForm (Database parsedDB, Stage oldStage) {
+        Stage prevStage = oldStage;
+        oldStage.close();
         db = parsedDB; //parse in an instance of the database
         connectDB = db.setupDataBase();
     }
@@ -115,10 +123,33 @@ public class RegisterForm {
         submitButton.setOnMouseClicked((new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 //System.out.println("Hello World");
+                Boolean doesUsernameAlreadyExist = null;
+                Boolean isPasswordMoreThan8Chars;
+                Boolean doesEmailFollowRegEx;
+
+                Boolean validEntries = true;
+
                 String email = newEmailField.getText();
                 String username = newUsernameField.getText();
                 String chosenPassword = newPasswordField.getText();
                 String repeatedPassword = retypedPasswordField.getText();
+
+                List<String> allAccounts = db.getAllAccounts(connectDB);
+                System.out.println("All accounts: " + allAccounts);
+
+                List<String> accountsThatEqualUsername = db.getAccountsThatEqual(username, connectDB);
+                System.out.println("Accounts that are the same: " + accountsThatEqualUsername);
+
+
+
+                if (accountsThatEqualUsername.size() > 0) {
+                    doesUsernameAlreadyExist = true;
+                } else {
+                    doesUsernameAlreadyExist = false;
+                }
+
+                System.out.println(allAccounts);
+
 
                 if (chosenPassword.equals(repeatedPassword)) {
                     didPasswordsMatch = true;
@@ -126,15 +157,79 @@ public class RegisterForm {
                     didPasswordsMatch = false;
                 }
 
+
+                //The following, verifies that all fields are filled correctly
                 if (email.isBlank() || username.isBlank() || chosenPassword.isBlank() || repeatedPassword.isBlank()) {
                     reg.getChildren().remove(emtpyFieldsErrorLabel);
                     reg.getChildren().remove(unmatchedPasswordsLabel);
+                    reg.getChildren().remove(usernameAlreadyExistsError);
+                    reg.getChildren().remove(incorrectEmailFormatError);
+                    reg.getChildren().remove(incorrectUsernameFormatError);
 
                     reg.getChildren().add(emtpyFieldsErrorLabel);
+
+                    validEntries = false;
+
+                } if (doesUsernameAlreadyExist) {
+                    reg.getChildren().remove(emtpyFieldsErrorLabel);
+                    reg.getChildren().remove(unmatchedPasswordsLabel);
+                    reg.getChildren().remove(usernameAlreadyExistsError);
+                    reg.getChildren().remove(incorrectEmailFormatError);
+                    reg.getChildren().remove(incorrectUsernameFormatError);
+
+                    usernameAlreadyExistsError.setId("usernameAlreadyExistsErrorLabel");
+                    usernameAlreadyExistsError.setFont(fonts.lemonMilkRegular13());
+                    usernameAlreadyExistsError.setMinWidth(500);
+                    usernameAlreadyExistsError.setAlignment(Pos.CENTER);
+                    usernameAlreadyExistsError.setLayoutY(20);
+
+                    reg.getChildren().add(usernameAlreadyExistsError);
+                    newUsernameField.clear();
+
+                    validEntries = false;
+
+
+                } if (!username.matches("[0-9]*")) {
+                    reg.getChildren().remove(emtpyFieldsErrorLabel);
+                    reg.getChildren().remove(unmatchedPasswordsLabel);
+                    reg.getChildren().remove(usernameAlreadyExistsError);
+                    reg.getChildren().remove(incorrectEmailFormatError);
+                    reg.getChildren().remove(incorrectUsernameFormatError);
+
+                    incorrectUsernameFormatError.setId("incorrectUsernameFormatError");
+                    incorrectUsernameFormatError.setFont(fonts.lemonMilkMedium12());
+                    incorrectUsernameFormatError.setLayoutX(105);
+                    incorrectUsernameFormatError.setLayoutY(12);
+                    reg.getChildren().add(incorrectUsernameFormatError);
+
+                    validEntries = false;
+
+
+                }   if (!email.matches("^(.+)@(.+)$")) {
+                    reg.getChildren().remove(emtpyFieldsErrorLabel);
+                    reg.getChildren().remove(unmatchedPasswordsLabel);
+                    reg.getChildren().remove(usernameAlreadyExistsError);
+                    reg.getChildren().remove(incorrectEmailFormatError);
+                    reg.getChildren().remove(incorrectUsernameFormatError);
+
+                    incorrectEmailFormatError.setId("incorrectEmailFormatError");
+                    incorrectEmailFormatError.setFont(fonts.lemonMilkRegular13());
+                    incorrectEmailFormatError.setMinWidth(500);
+                    incorrectEmailFormatError.setAlignment(Pos.CENTER);
+                    incorrectEmailFormatError.setLayoutY(20);
+
+                    reg.getChildren().add(incorrectEmailFormatError);
+                    newEmailField.clear();
+
+                    validEntries = false;
+
 
                 } if (!didPasswordsMatch) {
                     reg.getChildren().remove(emtpyFieldsErrorLabel);
                     reg.getChildren().remove(unmatchedPasswordsLabel);
+                    reg.getChildren().remove(usernameAlreadyExistsError);
+                    reg.getChildren().remove(incorrectEmailFormatError);
+                    reg.getChildren().remove(incorrectUsernameFormatError);
 
                     unmatchedPasswordsLabel.setId("unmatchedPasswordsError");
                     unmatchedPasswordsLabel.setFont(fonts.lemonMilkMedium12());
@@ -142,13 +237,20 @@ public class RegisterForm {
                     unmatchedPasswordsLabel.setLayoutY(12);
                     reg.getChildren().add(unmatchedPasswordsLabel);
 
-                } else {
+                    validEntries = false;
+
+
+                }   if (validEntries) {
                     reg.getChildren().remove(emtpyFieldsErrorLabel);
                     reg.getChildren().remove(unmatchedPasswordsLabel);
-
+                    reg.getChildren().remove(usernameAlreadyExistsError);
+                    reg.getChildren().remove(incorrectEmailFormatError);
+                    reg.getChildren().remove(incorrectUsernameFormatError);
+//
                     try {
-                        AttemptRegistration(email, username, chosenPassword);
+                        createNewAccountRequest(email, username, chosenPassword); //Attempt to add a new account
                         AddLabelsOnceRegistered();
+
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -186,7 +288,7 @@ public class RegisterForm {
         newUsernameField.setLayoutX(200);
         newUsernameField.setLayoutY(130);
         newUsernameField.setMinHeight(24);
-        newUsernameField.setMinWidth(240);
+        newUsernameField.setMinWidth(200);
         newUsernameField.setEffect(dropShadow);
 
 
@@ -196,7 +298,7 @@ public class RegisterForm {
         newEmailField.setLayoutX(200);
         newEmailField.setLayoutY(170);
         newEmailField.setMinHeight(24);
-        newEmailField.setMinWidth(240);
+        newEmailField.setMinWidth(200);
         newEmailField.setEffect(dropShadow);
 
         //Set and place the new password field
@@ -205,7 +307,7 @@ public class RegisterForm {
         newPasswordField.setLayoutX(200);
         newPasswordField.setLayoutY(230);
         newPasswordField.setMinHeight(24);
-        newPasswordField.setMinWidth(240);
+        newPasswordField.setMinWidth(200);
         newPasswordField.setEffect(dropShadow);
 
         //Set and place the retyped password field
@@ -214,7 +316,7 @@ public class RegisterForm {
         retypedPasswordField.setLayoutX(200);
         retypedPasswordField.setLayoutY(270);
         retypedPasswordField.setMinHeight(24);
-        retypedPasswordField.setMinWidth(240);
+        retypedPasswordField.setMinWidth(200);
         retypedPasswordField.setEffect(dropShadow);
 
         reg.getChildren().add(newUsernameField);
@@ -266,7 +368,7 @@ public class RegisterForm {
     }
 
     public void AddLabelsOnceRegistered(){
-        Label createdLabel = new Label("Account created! Press 'Back' to login.");
+        Label createdLabel = new Label("Account pending approval. Press 'Back' to return to login.");
         createdLabel.setFont(fonts.lemonMilkMedium13());
         createdLabel.setId("passwordLabel");
         createdLabel.setMinWidth(500);
@@ -286,6 +388,7 @@ public class RegisterForm {
                 ;
                 stage.close();
                 Database updatedDB = new Database();
+                updatedDB.setupDataBase();
 
                 LoginScreen loginScreen = new LoginScreen(updatedDB);
                 loginScreen.CreateLoginScreen();
@@ -305,15 +408,23 @@ public class RegisterForm {
 
     }
 
-    public void AttemptRegistration(String email, String username, String password) throws SQLException {
+    public void createNewAccountRequest(String email, String username, String password) throws SQLException {
         System.out.println("Added new user: " + username + ", " + email + ", " + password);
         System.out.println("Did passwords match? " + didPasswordsMatch);
 
         Boolean didUserRequestAdminAccess = adminRequestBox.isSelected();
 
+        int didUserRequestAdminAccessAsInt = 0;
+
+        if (didUserRequestAdminAccess){
+            didUserRequestAdminAccessAsInt = 1;
+        }
+
+
+
         System.out.println("Checkbox ticked: " + didUserRequestAdminAccess);
 
-        db.createNewUser(email, username, password, didUserRequestAdminAccess, connectDB);
+        db.newAccountRequest(Integer.parseInt(username), email, password, didUserRequestAdminAccessAsInt);
 
 
     }

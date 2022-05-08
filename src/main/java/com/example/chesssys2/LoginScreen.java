@@ -127,7 +127,7 @@ public class LoginScreen {
         registerButtton.setOnMouseClicked((new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 //System.out.println("Hello World");
-                RegisterForm registerForm = new RegisterForm(db);
+                RegisterForm registerForm = new RegisterForm(db, stage);
                 registerForm.createRegisterForm();
             }
         }));
@@ -157,13 +157,25 @@ public class LoginScreen {
 
 
     public void AttemptLogin (){
-            String username = usernameField.getText();
+            int username = Integer.parseInt(usernameField.getText());
             String password = passwordField.getText();
 
             String givenAccount = username + password;
 
-            boolean didMatch = db.getUserAccountQuery(username, connectDB, givenAccount);
-            System.out.println(didMatch);
+            boolean didMatch = db.getUserAccountQuery(String.valueOf(username), connectDB, givenAccount);
+
+
+            //determines account type
+            String accountType = "";
+            int accountTypeAsInt = Integer.parseInt(db.getUserDetailsByID(username).get(3));
+
+            if (accountTypeAsInt == 0){
+                accountType = "normal";
+            } if (accountTypeAsInt == 1){
+                accountType = "admin";
+            }
+
+            System.out.println(accountType);
 
             root.getChildren().remove(emptyErrorMsg); // these 2 lines remove any labels that are currently on the window if they exist
             root.getChildren().remove(invalidErrorMsg); // nothing will happen if they don't exist
@@ -194,7 +206,7 @@ public class LoginScreen {
 
             if (loginValidated) {
                 Dashboard dashboard = new Dashboard(username, db);
-                dashboard.createUserDashboard(givenAccount);
+                dashboard.createUserDashboard(accountType, username, connectDB);
                 stage.close();
             }
     }

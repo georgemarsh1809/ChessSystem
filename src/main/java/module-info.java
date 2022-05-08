@@ -3,6 +3,7 @@ module com.example.chesssys2 {
     requires javafx.fxml;
     requires javafx.web;
 
+    requires java.desktop;
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires org.kordamp.ikonli.javafx;

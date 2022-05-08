@@ -2,46 +2,36 @@ package com.example.chesssys2;
 
 import java.sql.Connection;
 import java.util.Date;
+import java.util.List;
 
 public class User {
-    String user;
+    Database db;
+    int id;
+    String accountType = "normal";
+    List<List<String>> userLoans;
     int openLoans;
     String nextDueDate;
-    Database db;
 
-    public User (String username, Database parsedDB) {
-        user = username;
+    public User (Database parsedDB, int username) {
         db = parsedDB;
+        id = username;
     }
 
-    public String[] getCurrentLoans () {
-        String[] userLoans = new String[0];
+    public int getUserID(){
+        return id;
+    }
 
-        //Do stuff here
+    public String getAccountType(){
+        return accountType;
+    }
+
+
+    public List<List<String>> getAllLoans () {
+
+         userLoans = db.getAllLoans(String.valueOf(id));
 
         return userLoans;
 
-    }
-
-    public int getOpenLoans () {
-        //Calculate open loans for user here
-        //openLoans = calculated value
-
-        return openLoans;
-    }
-
-    public String getNextDueDate () {
-        //Calculate next due date
-
-        return nextDueDate;
-    }
-
-    public void addLoan () {
-        Loan loan = new Loan(db);
-    }
-
-    public void endLoan () {
-        //
     }
 
 }

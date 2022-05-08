@@ -46,12 +46,79 @@
     -fx-font-family: "LEMON MILK";
 }
 
+#listing {
+    -fx-background-color: #ffffff;
+    -fx-border-radius: 3, 2;
+    -fx-background-radius: 2em;
+}
+
+#listingHeader {
+    -fx-background-color: #B1D0E0;
+    /*-fx-border-radius: 3, 2;*/
+    /*-fx-background-radius: 2em;*/
+}
+
+#idHeaderLabel {
+    -fx-border-radius: 1;
+    -fx-border-color: #c4462d;
+}
+
+#emailHeaderLabel {
+    -fx-border-radius: 1;
+    -fx-border-color: #234567;
+}
+
+#adminAccessHeaderLabel {
+    -fx-border-radius: 1;
+    -fx-border-color: #c4462d;
+}
+
+
+#approvalsScroll {
+    -fx-background-color: #B1D0E0;
+}
+
+#imgView {
+    -fx-border-radius: 3, 2;
+    -fx-background-radius: 2em;
+}
+
 #welcomeLabel {
     -fx-text-fill: #1A374D;
 }
 
+#descriptionLabel {
+    -fx-text-fill: #666666;
+}
+
+#findItemsMainLabel {
+    -fx-text-fill: #ffffff;
+}
+
+#myLoansMainLabel {
+    -fx-text-fill: #ffffff;
+}
+
 #loginButton {
     -fx-background-color: #406882;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #B1D0E0;
+}
+
+#findItemsButton {
+    -fx-background-color: #1A374D;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #B1D0E0;
+}
+
+#approvalsButton {
+    -fx-background-color: #1A374D;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #B1D0E0;
+}
+
+#myLoansButton {
+    -fx-background-color: #1A374D;
     -fx-background-radius: 5em;
     -fx-text-fill: #B1D0E0;
 }
@@ -69,6 +136,26 @@
     -fx-font-family: "LEMON MILK";
 }
 
+#approveButton {
+    -fx-background-color: #14b817;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #105212;
+    -fx-font-family: "LEMON MILK";
+}
+
+#declineButton {
+    -fx-background-color: #cc6060;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #8a1212;
+    -fx-font-family: "LEMON MILK";
+}
+
+#approvalsPane{
+    -fx-background-color: #B1D0E0;
+    -fx-border-color: #8a1212;
+    -fx-border-: 2;
+}
+
 #errorMsg {
     -fx-background-color: #D4483B;
 }
@@ -81,9 +168,49 @@
     -fx-text-fill: #406882;
 }
 
+#statusActive {
+    -fx-text-fill: #43ba43;
+}
+
+#statusDue {
+    -fx-text-fill: #c4462d;
+}
+
+#statusFulfilled {
+    -fx-text-fill: #406882;
+}
+
+#statusExpired {
+    -fx-text-fill: #c4462d;
+}
+
 #line1 {
     -fx-stroke: #406882;
 }
+
+#sc {
+    -fx-background-color: #D4483B;
+}
+
+#gridPane {
+    -fx-background-color: #CBE2ED ;
+}
+
+#scrollPane {
+    -fx-background-color: #CBE2ED ;
+}
+
+#lineFindItems {
+    -fx-stroke: #1A374D;
+}
+
+#lineMyLoans {
+    -fx-stroke: #1A374D;
+}
+
+/*#lineLoanHeader {*/
+/*    -fx-stroke: #1A374D;*/
+/*}*/
 
 #usernameLabel {
     -fx-text-fill: #406882;
@@ -94,6 +221,10 @@
 }
 
 #passwordLabel {
+    -fx-text-fill: #406882 ;
+}
+
+#usernameAlreadyExistsErrorLabel {
     -fx-text-fill: #406882 ;
 }
 
@@ -109,4 +240,36 @@
     -fx-text-fill: #B1D0E0;
     -fx-font-family: "LEMON MILK";
 
+}
+
+#loanLengthSelector {
+    -fx-background-color: #B1D0E0;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #B1D0E0;
+    -fx-font-family: "LEMON MILK";
+
+}
+
+#loanButton {
+    -fx-background-color: #406882;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #B1D0E0;
+    -fx-font-family: "LEMON MILK";
+
+}
+
+#exportButton {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #B1D0E0;
+    -fx-font-family: "LEMON MILK";
+
+}
+
+
+#confirmLoanButton {
+    -fx-background-color: #406882;
+    -fx-background-radius: 5em;
+    -fx-text-fill: #B1D0E0;
+    -fx-font-family: "LEMON MILK";
 }
