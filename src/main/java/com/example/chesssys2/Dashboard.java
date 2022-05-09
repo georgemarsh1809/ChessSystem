@@ -12,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
@@ -46,6 +47,8 @@ public class Dashboard {
 
     private Pane headerPane = new Pane();
 
+    private Circle ppParent = new Circle();
+
     private Label idHeaderLabel = new Label("Requested ID");
     private Label emailHeaderLabel = new Label("Requested Email");
     private Label adminAccessHeaderLabel = new Label("Admin Access Request");
@@ -53,10 +56,12 @@ public class Dashboard {
 
     private Button findItemsButton = new Button("  find items");
     private Button myLoansButton = new Button("  my loans");
-    private Button approvalsButton = new Button(" approvals");
+    private Button approvalsButton = new Button("  approvals");
 
     private Label findItemsMainLabel = new Label("find items");
     private Label findItemsSubLabel = new Label("search for items to loan...");
+
+    private TextField searchBar = new TextField();
 
     private Label myLoansMainLabel = new Label("My Loans");
     private Label myLoansSubLabel = new Label("view all of your current open loans...");
@@ -89,9 +94,6 @@ public class Dashboard {
             isAdmin = false;
         }
 
-
-
-
         createSidebar(isAdmin, userID);
 
 
@@ -110,6 +112,14 @@ public class Dashboard {
         sideBar.setStyle("-fx-background-color: #1A374D");
         sideBar.setPrefSize(282, 1080);
 
+        Image profileIcon = new Image(this.getClass().getResource("userIcon.png").toExternalForm());
+        ImageView profileIconView = new ImageView(profileIcon);
+
+        profileIconView.setPreserveRatio(true);
+        profileIconView.setFitHeight(84);
+        profileIconView.setLayoutX(99);
+        profileIconView.setLayoutY(75);
+
         Line line = new Line();
         line.setId("lineMyLoans");
         line.setStartX(382);
@@ -123,7 +133,15 @@ public class Dashboard {
             approvalsButton.setId("approvalsButton");
             approvalsButton.setFont(fonts.lemonMilkRegular22());
             approvalsButton.setLayoutX(30);
-            approvalsButton.setLayoutY(600);
+            approvalsButton.setLayoutY(420);
+
+            Image approvalsIcon = new Image(this.getClass().getResource("circle-question-solid (1).png").toExternalForm());
+            ImageView approvalsIconView = new ImageView(approvalsIcon);
+
+            approvalsIconView.setFitHeight(20);
+            approvalsIconView.setFitWidth(20);
+            approvalsButton.setGraphic(approvalsIconView);
+            approvalsButton.setContentDisplay(ContentDisplay.LEFT);
 
             approvalsButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
@@ -135,8 +153,12 @@ public class Dashboard {
                         dash.getChildren().remove(findItemsScroll);
                         dash.getChildren().remove(findItemsMainLabel);
                         dash.getChildren().remove(findItemsSubLabel);
+                        dash.getChildren().remove(line);
 
                         createApprovalsListScreen();
+
+                        dash.getChildren().add(line);
+                        line.setEndX(1327);
 
                     } catch (ParseException e) {
                         e.printStackTrace();
@@ -147,14 +169,6 @@ public class Dashboard {
             sideBar.getChildren().add(approvalsButton);
 
         }
-
-        Image profileIcon = new Image(this.getClass().getResource("userIcon.png").toExternalForm());
-        ImageView profileIconView = new ImageView(profileIcon);
-
-        profileIconView.setPreserveRatio(true);
-        profileIconView.setFitHeight(84);
-        profileIconView.setLayoutX(99);
-        profileIconView.setLayoutY(75);
 
         findItemsButton.setId("findItemsButton");
         findItemsButton.setFont(fonts.lemonMilkRegular22());
@@ -172,8 +186,10 @@ public class Dashboard {
                 dash.getChildren().remove(line);
 
                 myLoansButton.setFont(fonts.lemonMilkRegular22());
+                approvalsButton.setFont(fonts.lemonMilkRegular22());
 
                 dash.getChildren().add(line);
+                line.setEndX(1375);
 
                 createProductsListScreen();
 
@@ -196,6 +212,7 @@ public class Dashboard {
 
         Image myLoansIcon = new Image(this.getClass().getResource("chess-king.png").toExternalForm());
         ImageView myLoansIconView = new ImageView(myLoansIcon);
+
         myLoansIconView.setFitHeight(25);
         myLoansIconView.setFitWidth(20);
         myLoansButton.setGraphic(myLoansIconView);
@@ -209,14 +226,18 @@ public class Dashboard {
                 dash.getChildren().remove(approvalsScroll);
                 dash.getChildren().remove(approvalsMainLabel);
                 dash.getChildren().remove(approvalsSubLabel);
+                dash.getChildren().remove(line);
 
                 try {
                     createMyLoansScreen();
+                    dash.getChildren().add(line);
+                    line.setEndX(1375);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
 
                 findItemsButton.setFont(fonts.lemonMilkRegular22());
+                approvalsButton.setFont(fonts.lemonMilkRegular22());
             }
 
         }));
@@ -243,16 +264,6 @@ public class Dashboard {
         myLoansSubLabel.setLayoutX(380);
         myLoansSubLabel.setLayoutY(230);
 
-
-
-//        Image magnifyingGlass = new Image(this.getClass().getResource("magnifying-glass-white.png").toExternalForm());
-//        ImageView magnifyingGlassView = new ImageView(magnifyingGlass);
-//        magnifyingGlassView.setFitHeight(100);
-//        magnifyingGlassView.setFitWidth(100);
-//
-//        magnifyingGlassView.setLayoutY(70);
-//        magnifyingGlassView.setLayoutX(1350);
-
         placeLoansGrid(); //adds all items to the grid, then to the scroll pane
 
         myLoansScroll.setContent(myLoansGrid);
@@ -273,9 +284,6 @@ public class Dashboard {
 
     public void createProductsListScreen(){
         dash.getChildren().remove(myLoansScroll);
-//        dash.getChildren().remove(approvalsScroll);
-//        dash.getChildren().remove(approvalsMainLabel);
-//        dash.getChildren().remove(approvalsSubLabel);
 
         findItemsButton.setFont(fonts.lemonMilkMedium22());
 
@@ -309,7 +317,6 @@ public class Dashboard {
 
         dash.getChildren().add(findItemsMainLabel);
         dash.getChildren().add(findItemsSubLabel);
-//        dash.getChildren().add(magnifyingGlassView);
         dash.getChildren().add(findItemsScroll);
 
 
@@ -336,14 +343,6 @@ public class Dashboard {
         approvalsSubLabel.setLayoutX(380);
         approvalsSubLabel.setLayoutY(230);
 
-        Line line = new Line();
-        line.setId("lineMyLoans");
-        line.setStartX(382);
-        line.setEndX(1460);
-        line.setStartY(300);
-        line.setEndY(300);
-        line.setStrokeWidth(6);
-
         placeApprovalsGrid(); //adds all items to the grid, then to the scroll pane
 
         approvalsScroll.setContent(approvalsGrid);
@@ -354,14 +353,10 @@ public class Dashboard {
         approvalsScroll.setPrefWidth(950);
         approvalsScroll.setId("scrollPane");
         approvalsScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-//
+
         dash.getChildren().add(approvalsMainLabel);
         dash.getChildren().add(approvalsSubLabel);
-//        dash.getChildren().add(line);
-//        dash.getChildren().add(magnifyingGlassView);
         dash.getChildren().add(approvalsScroll);
-
-
     }
 
 
@@ -440,7 +435,6 @@ public class Dashboard {
         headerPane.getChildren().remove(adminAccessHeaderLabel);
         headerPane.getChildren().remove(actionHeaderLabel);
         approvalsGrid.getChildren().remove(headerPane);
-
 
         List<List<String>> allRequests = db.getAllAccountRequests();
 
