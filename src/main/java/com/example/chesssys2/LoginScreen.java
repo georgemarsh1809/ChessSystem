@@ -20,24 +20,22 @@ import java.util.List;
 
 public class LoginScreen {
 
-    //Parent root = FXMLLoader.load(getClass().getResource("hello-view.fxml"));
-
-    private Group root = new Group();
-    private Scene loginScene = new Scene(root,  500, 250, Color.web("6998AB"));
-    private Stage stage = new Stage();
+    private final Group root = new Group();
+    private final Scene loginScene = new Scene(root,  500, 250, Color.web("6998AB"));
+    private final Stage stage = new Stage();
 
     Database db;
     Connection connectDB;
 
     boolean loginValidated = false;
 
-    private FontLoader fonts = new FontLoader();
+    private final FontLoader fonts = new FontLoader();
 
-    private Label welcomeLabel = new Label("Welcome Back!");
-    private TextField usernameField = new TextField();
-    private PasswordField passwordField = new PasswordField();
-    private Button loginButton = new Button("Login ");
-    private Button registerButtton = new Button("Register");
+    private final Label welcomeLabel = new Label("Welcome Back!");
+    private final TextField usernameField = new TextField();
+    private final PasswordField passwordField = new PasswordField();
+    private final Button loginButton = new Button("Login ");
+    private final Button registerButtton = new Button("Register");
 
     private Label emptyErrorMsg;
     private Label invalidErrorMsg;
@@ -206,7 +204,7 @@ public class LoginScreen {
 
             if (loginValidated) {
                 Dashboard dashboard = new Dashboard(username, db);
-                dashboard.createUserDashboard(accountType, username, connectDB);
+                dashboard.createUserDashboard(accountType, connectDB);
                 stage.close();
             }
     }

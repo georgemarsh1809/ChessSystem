@@ -26,65 +26,65 @@ import java.util.Date;
 import java.awt.desktop.*;
 
 public class ProductListing {
-    private User user;
-    private int userID;
-    private String accountType;
+    private final User user;
+    private final int userID;
+    private final String accountType;
     //initialise properties and nodes, i.e. button
-    private Database db;
-    private int productID;
-    private String title;
-    private String category;
-    private String description;
-    private String totalStock;
-    private String numOnLoan;
-    private String imageName;
+    private final Database db;
+    private final int productID;
+    private final String title;
+    private final String category;
+    private final String description;
+    private final String totalStock;
+    private final String numOnLoan;
+    private final String imageName;
 
-    private int numAvailable;
+    private final int numAvailable;
 
-    private FontLoader fonts = new FontLoader();
+    private final FontLoader fonts = new FontLoader();
 
-    private Button loanButton = new Button();
-    private Button confirmLoanButton = new Button();
-    private Button backToDashButton = new Button();
-    private Button exportButton = new Button();
-    private Button infoButton = new Button();
+    private final Button loanButton = new Button();
+    private final Button confirmLoanButton = new Button();
+    private final Button backToDashButton = new Button();
+    private final Button exportButton = new Button();
+    private final Button infoButton = new Button();
 
-    private Pane productListing = new Pane();
+    private final Pane productListing = new Pane();
 
-    private Label headerLabel = new Label();
-    private Line line = new Line();
+    private final Label headerLabel = new Label();
+    private final Line line = new Line();
 
-    private Label titleLabel = new Label();
-    private Label descriptionLabel = new Label();
-    private Label numAvailableLabel = new Label();
+    private final Label titleLabel = new Label();
+    private final Label descriptionLabel = new Label();
+    private final Label numAvailableLabel = new Label();
 
-    private Label loanHeaderLabel = new Label();
-    private Label productTitleLabel = new Label();
-    private Label loanDescriptionLabel = new Label();
-    private Label productDescriptionLabel = new Label();
+    private final Label loanHeaderLabel = new Label();
+    private final Label productTitleLabel = new Label();
+    private final Label loanDescriptionLabel = new Label();
+    private final Label productDescriptionLabel = new Label();
 
-    private Label loanLengthQuery = new Label("How many days do you want to loan this item?");
-    private Label todaysDateLabel = new Label();
-    private Label dueDateLabel = new Label();
-    private Label dueDateLabelPreText = new Label();
+    private final Label loanLengthQuery = new Label("How many days do you want to loan this item?");
+    private final Label todaysDateLabel = new Label();
+    private final Label dueDateLabel = new Label();
+    private final Label dueDateLabelPreText = new Label();
 
-    private Label confirmationLabel = new Label();
+    private final Label confirmationLabel = new Label();
 
-    private Label exportPopUpLabel = new Label();
-    private Label exportTitleLabel = new Label();
-    private Label exportTypeLabel = new Label();
-    private Label exportNumAvailableLabel = new Label();
-    private Label exportNumOnLoanLabel = new Label();
-    private Label exportNextDueDate = new Label();
-    private Label fileWrittenLabel = new Label("File Written at /Users/georgemarsh/Documents/Uni/Semester 2/OOP Module/fileExports/...");
+    private final Label exportPopUpLabel = new Label();
+    private final Label exportTitleLabel = new Label();
+    private final Label exportTypeLabel = new Label();
+    private final Label exportNumAvailableLabel = new Label();
+    private final Label exportNumOnLoanLabel = new Label();
+    private final Label exportNextDueDate = new Label();
+    private final Label fileWrittenLabel = new Label("File Written at /Users/georgemarsh/Documents/Uni/Semester 2/OOP Module/fileExports/...");
 
 
     private Scene loanScene;
     private Scene exportScene;
 
-    private Stage dashStage;
-    private Stage loanStage = new Stage();
-    private Stage exportStage = new Stage();
+    private final Stage dashStage;
+    private final Stage loanStage = new Stage();
+    private final Stage exportStage = new Stage();
 
 
     //constructor
@@ -183,7 +183,9 @@ public class ProductListing {
 
 
         productListing.setId("listing");
-        productListing.setPrefWidth(400);
+        productListing.setMaxWidth(275);
+        productListing.setMinWidth(275);
+        productListing.setPrefWidth(275);
         productListing.setMinHeight(500);
 
 
@@ -468,8 +470,6 @@ public class ProductListing {
             public void handle(MouseEvent event) {
                 String dueDate = dueDateLabel.getText();
 
-
-
                 Loan newLoan = new Loan(db, parsedUser, blankLoanID, parsedProdID, dueDate);
                 Boolean newLoanAdded = newLoan.addLoan();
 
@@ -498,7 +498,7 @@ public class ProductListing {
                             Connection updatedDB = db.setupDataBase();
 
                             Dashboard updatedDashboard = new Dashboard(userID, db);
-                            updatedDashboard.createUserDashboard(accountType, userID, updatedDB);
+                            updatedDashboard.createUserDashboard(accountType, updatedDB);
                             updatedDashboard.createProductsListScreen();
 
                         } else {

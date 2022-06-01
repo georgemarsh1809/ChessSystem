@@ -179,6 +179,60 @@ public class Database {
         }
     }
 
+    public List<List<String>> searchForProductsLike(String searchTerm){
+        List<List<String>> productsTorReturn = new ArrayList<List<String>>();
+
+        String searchQuery = "SELECT * FROM inventory WHERE (title) LIKE '%" + searchTerm + "%'" + " OR (category) LIKE '%\" + searchTerm + \"%'";
+
+        try {
+            Statement statement = this.connectDB.createStatement();
+            ResultSet queryOutput = statement.executeQuery(searchQuery);
+            System.out.println(queryOutput);
+
+            while (queryOutput.next())
+            {
+                List<String> currentProduct = new ArrayList<String>();
+
+                String productId = queryOutput.getString("productID");
+                currentProduct.add(productId);
+
+                String title = queryOutput.getString("title");
+                currentProduct.add(title);
+
+                String cat = queryOutput.getString("category");
+                currentProduct.add(cat);
+
+                String desc = queryOutput.getString("description");
+                currentProduct.add(desc);
+
+                String totalStock = queryOutput.getString("totalStock");
+                currentProduct.add(totalStock);
+
+                String onLoan = queryOutput.getString("onLoan");
+                currentProduct.add(onLoan);
+
+                String imageName = queryOutput.getString("imageName");
+                currentProduct.add(imageName);
+
+                productsTorReturn.add(currentProduct);
+
+            }
+
+            statement.close();
+
+            System.out.println("items found");
+
+            statement.close();
+
+        } catch (SQLException e) {
+            System.out.println("Nothing returned!!");
+            e.printStackTrace();
+
+        }
+
+        return productsTorReturn;
+    }
+
     public List<String> getAllAccounts (Connection connectDB) {
         List<String> accounts = new ArrayList<String>();
 
@@ -281,7 +335,7 @@ public class Database {
     public List<List<String>> getAllLoans (String userID) {
         List<List<String>> allLoans = new ArrayList<List<String>>();
 
-        String query = "SELECT * FROM loans WHERE userID = " + userID ;
+        String query = "SELECT * FROM loans WHERE userID = " + userID;
 
         try {
             Statement statement = connectDB.createStatement();
@@ -309,7 +363,7 @@ public class Database {
             statement.close();
 
         }   catch (SQLException e) {
-            System.out.println("Exception!!");
+            System.out.println("Loans Exception!!");
         }
 
         return allLoans;

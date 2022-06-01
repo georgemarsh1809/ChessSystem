@@ -18,43 +18,43 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class LoanListing {
-    private FontLoader fonts = new FontLoader();
+    private final FontLoader fonts = new FontLoader();
 
-    private Stage dashStage;
-    private Database db;
+    private final Stage dashStage;
+    private final Database db;
 //    private int user;
-    private User user;
-    private String accountType;
+    private final User user;
+    private final String accountType;
 
-    private int loanID;
-    private String productID;
-    private String startDate;
-    private String dueDate;
+    private final int loanID;
+    private final String productID;
+    private final String startDate;
+    private final String dueDate;
 
-    private String prodImageName;
-    private String prodTitle;
-    private String prodDescription;
-    private List<String> productDetails;
+    private final String prodImageName;
+    private final String prodTitle;
+    private final String prodDescription;
+    private final List<String> productDetails;
 
-    private Label prodTitleLabel = new Label();
-    private Label prodDescriptionLabel = new Label();
-    private Label loanStartDateLabel = new Label();
-    private Label loanDueDateLabel = new Label();
+    private final Label prodTitleLabel = new Label();
+    private final Label prodDescriptionLabel = new Label();
+    private final Label loanStartDateLabel = new Label();
+    private final Label loanDueDateLabel = new Label();
 
-    private Label statusPreLabel = new Label();
-    private Label loanStatusLabel = new Label();
+    private final Label statusPreLabel = new Label();
+    private final Label loanStatusLabel = new Label();
 
-    private Label areYouSureLabel = new Label();
+    private final Label areYouSureLabel = new Label();
 
-    private Button returnButton = new Button("return");
+    private final Button returnButton = new Button("return");
 
-    private Button noButton = new Button("NO");
-    private Button yesButton = new Button("YES");
+    private final Button noButton = new Button("NO");
+    private final Button yesButton = new Button("YES");
 
 
-    private Pane loanElement = new Pane();
+    private final Pane loanElement = new Pane();
 
-    private Stage returnStage = new Stage();
+    private final Stage returnStage = new Stage();
     private Scene returnScene;
 
 
@@ -219,8 +219,13 @@ public class LoanListing {
 
                 Connection updatedDB = db.setupDataBase();
                 Dashboard updatedDashboard = new Dashboard(userID, db);
-                updatedDashboard.createUserDashboard(accountType, userID, updatedDB);
-                updatedDashboard.createProductsListScreen();
+                updatedDashboard.createUserDashboard("admin", updatedDB);
+                updatedDashboard.createSidebar(true);
+                try {
+                    updatedDashboard.createMyLoansScreen();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         });
 

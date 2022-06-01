@@ -46,6 +46,7 @@
     -fx-font-family: "LEMON MILK";
 }
 
+
 #listing {
     -fx-background-color: #ffffff;
     -fx-border-radius: 3, 2;
@@ -128,6 +129,14 @@
     -fx-text-fill: #7AA9BC;
     -fx-background-radius: 5em;
 }
+
+#searchBar {
+    -fx-background-color: #B1D0E0;
+    -fx-background-insets: 0, 1;
+    -fx-border-radius: 3, 2;
+    -fx-background-radius: 5em;
+}
+
 
 #submitButton {
     -fx-background-color: #406882;

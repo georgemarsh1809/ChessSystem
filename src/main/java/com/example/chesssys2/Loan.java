@@ -13,7 +13,7 @@ public class Loan {
     int loanID;
     String status;
     String loanDueDate; // 7, 14 or 28?
-    private Database db;
+    private final Database db;
 
     public Loan (Database parsedDB, int userID, int loanID, int productID, String loanDueDate) {
         db = parsedDB;

@@ -6,8 +6,8 @@ import java.io.PrintWriter;
 
 public class WriteToFile {
 
-    private String path;
-    private boolean appendToFile = false;
+    private final String path;
+    private final boolean appendToFile = false;
 
     public WriteToFile(String file_path){
         path = file_path;

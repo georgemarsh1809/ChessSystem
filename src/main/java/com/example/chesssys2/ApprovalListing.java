@@ -23,47 +23,52 @@ import java.util.Date;
 
 
 public class ApprovalListing {
-    private Database db;
+    private final Database db;
 
-    private User user;
-    private int userID;
+    private AdminUser user;
+    private final int userID;
 
-    private int requestID;
-    private int requestedUserID;
-    private String requestedEmail;
-    private int requestedAdminAccess;
-    private String requestedPassword;
+    private final int requestID;
+    private final int requestedUserID;
+    private final String requestedEmail;
+    private final int requestedAdminAccess;
+    private final String requestedPassword;
 
-    private FontLoader fonts = new FontLoader();
+    private final FontLoader fonts = new FontLoader();
 
-    private Button approveButton = new Button();
-    private Button declineButton = new Button();
+    private final Button approveButton = new Button();
+    private final Button declineButton = new Button();
 
-    private Pane requestListing = new Pane();
+    private final Pane requestListing = new Pane();
 
-    private Label idLabel = new Label();
-    private Label emailLabel = new Label();
-    private Label adminRequestLabel = new Label();
+    private final Label idLabel = new Label();
+    private final Label emailLabel = new Label();
+    private final Label adminRequestLabel = new Label();
 
-    private Label loanHeaderLabel = new Label();
-    private Label productTitleLabel = new Label();
-    private Label loanDescriptionLabel = new Label();
-    private Label productDescriptionLabel = new Label();
+    private final Label loanHeaderLabel = new Label();
+    private final Label productTitleLabel = new Label();
+    private final Label loanDescriptionLabel = new Label();
+    private final Label productDescriptionLabel = new Label();
 
     private Scene loanScene;
 
-    private Stage dashStage;
-    private Stage loanStage = new Stage();
+    private final Stage dashStage;
+    private final Stage loanStage = new Stage();
 
 
     //constructor
-    public ApprovalListing(Stage parentStage, Database parsedDB, int adminUser, int requestID, int requestedUserID, String requestedUserEmail, String requestedPassword, int requestedAdminAccess){
+    public ApprovalListing(Stage parentStage, Database parsedDB, int userID, int requestID, int requestedUserID, String requestedUserEmail, String requestedPassword, int requestedAdminAccess){
         dashStage = parentStage;
         db = parsedDB;
         this.requestID = requestID;
         this.requestedUserID = requestedUserID;
-        this.user = new User(db, adminUser); //replace with adminUser?
+        this.user = new AdminUser(db, userID); //replace with adminUser?
         this.userID = this.user.getUserID();
+
+        if (this.user.getAccountType().equals("admin")){
+            this.user = new AdminUser(db, this.userID);
+        }
+
         this.requestedEmail = requestedUserEmail;
         this.requestedAdminAccess = requestedAdminAccess;
         this.requestedPassword = requestedPassword;
@@ -117,18 +122,17 @@ public class ApprovalListing {
             public void handle(MouseEvent event) {
                 //System.out.println("Hello World");
                 try {
-                    db.createNewUser(requestedEmail, requestedUserID, requestedPassword, requestedAdminAccess);
-                    db.removeRequest(requestID);
+                    user.approveAccountCreation(requestID, requestedEmail, requestedUserID, requestedPassword, requestedAdminAccess);
+//                    db.createNewUser(requestedEmail, requestedUserID, requestedPassword, requestedAdminAccess);
+//                    db.removeRequest(requestID);
                     Connection updatedDB = db.setupDataBase();
                     dashStage.close();
                     Dashboard updatedDash = new Dashboard(userID, db);
-                    updatedDash.createUserDashboard("admin", userID,updatedDB);
-                    updatedDash.createSidebar(true, userID);
+                    updatedDash.createUserDashboard("admin", updatedDB);
+                    updatedDash.createSidebar(true);
                     updatedDash.createApprovalsListScreen();
 
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } catch (ParseException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -141,6 +145,23 @@ public class ApprovalListing {
         declineButton.setMaxHeight(30);
         declineButton.setLayoutX(750);
         declineButton.setLayoutY(5);
+
+        declineButton.setOnMouseClicked((new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                try {
+                    user.declineAccountCreation(requestID);
+                    Connection updatedDB = db.setupDataBase();
+                    dashStage.close();
+                    Dashboard updatedDash = new Dashboard(userID, db);
+                    updatedDash.createUserDashboard("admin", updatedDB);
+                    updatedDash.createSidebar(true);
+                    updatedDash.createApprovalsListScreen();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }));
 
 
         requestListing.setId("approvalListing");

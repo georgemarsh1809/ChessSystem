@@ -3,12 +3,14 @@ package com.example.chesssys2;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -26,76 +28,94 @@ import java.util.List;
 
 public class Dashboard {
 
-    private Group dash = new Group();
-    private Scene dashboard = new Scene(dash,  1920, 1080, Color.web("6998AB"));
-    private Stage dashStage = new Stage();
+    private final Group dash = new Group();
+    private final Scene dashboard = new Scene(dash,  1920, 1080, Color.web("6998AB"));
+    private final Stage dashStage = new Stage();
+    private final Stage logoutStage = new Stage();
 
-    private FontLoader fonts = new FontLoader();
+    private final FontLoader fonts = new FontLoader();
 
-    private Database db;
+    private final Database db;
     private Connection connectDB;
 
-    private int user;
+    private User user;
+    private final int username;
 
-    private ScrollPane findItemsScroll = new ScrollPane();
-    private ScrollPane myLoansScroll = new ScrollPane();
-    private ScrollPane approvalsScroll = new ScrollPane();
+    private final ScrollPane findItemsScroll = new ScrollPane();
+    private final ScrollPane myLoansScroll = new ScrollPane();
+    private final ScrollPane approvalsScroll = new ScrollPane();
 
-    private GridPane findItemsGrid = new GridPane();
-    private GridPane myLoansGrid = new GridPane();
-    private GridPane approvalsGrid = new GridPane();
+    private final GridPane findItemsGrid = new GridPane();
+    private final GridPane myLoansGrid = new GridPane();
+    private final GridPane approvalsGrid = new GridPane();
 
-    private Pane headerPane = new Pane();
+    private final Pane headerPane = new Pane();
 
-    private Circle ppParent = new Circle();
+    private final Circle ppParent = new Circle();
 
-    private Label idHeaderLabel = new Label("Requested ID");
-    private Label emailHeaderLabel = new Label("Requested Email");
-    private Label adminAccessHeaderLabel = new Label("Admin Access Request");
-    private Label actionHeaderLabel = new Label("Action");
+    private final Line line = new Line();
 
-    private Button findItemsButton = new Button("  find items");
-    private Button myLoansButton = new Button("  my loans");
-    private Button approvalsButton = new Button("  approvals");
+    private final Label idHeaderLabel = new Label("Requested ID");
+    private final Label emailHeaderLabel = new Label("Requested Email");
+    private final Label adminAccessHeaderLabel = new Label("Admin Access Request");
+    private final Label actionHeaderLabel = new Label("Action");
 
-    private Label findItemsMainLabel = new Label("find items");
-    private Label findItemsSubLabel = new Label("search for items to loan...");
+    private final Button findItemsButton = new Button("  find items");
+    private final Button myLoansButton = new Button("  my loans");
+    private final Button approvalsButton = new Button("  approvals");
+    private final Button logoutButton = new Button("  log out");
 
-    private TextField searchBar = new TextField();
+    private final Label findItemsMainLabel = new Label("find items");
+    private final Label findItemsSubLabel = new Label("search for items to loan...");
 
-    private Label myLoansMainLabel = new Label("My Loans");
-    private Label myLoansSubLabel = new Label("view all of your current open loans...");
+    private final Label areYouSureLabel = new Label("Are you sure you want to log out?");
+    private final Button yesButton = new Button("yes");
+    private final Button noButton = new Button("no");
 
-    private Label approvalsMainLabel = new Label("approvals");
-    private Label approvalsSubLabel = new Label("view all open account creation requests..");
+    private final TextField searchBar = new TextField();
+    private final Label searchLabel = new Label("Search: ");
+    private List<List<String>> productsToDisplay;
+    private final List<List<String>> allRequests;
+
+    private final Label myLoansMainLabel = new Label("My Loans");
+    private final Label myLoansSubLabel = new Label("view all of your current open loans...");
+
+    private final Label approvalsMainLabel = new Label("approvals");
+    private final Label approvalsSubLabel = new Label("view all open account creation requests..");
+    private Scene logoutScene;
 
     public Dashboard (int username, Database parsedDB) {
         db = parsedDB;
         connectDB = db.setupDataBase();
 
+        user = new User(db, username);
+        this.username = user.getUserID();
 
-        User currentUser = new User(db, username);
+        allRequests = db.getAllAccountRequests();
 
-        this.user = currentUser.getUserID();
 
     }
 
-    public void createUserDashboard(String accountType, int userID, Connection parsedConnectDB){
+    public void createUserDashboard(String accountType, Connection parsedConnectDB){
         String css = this.getClass().getResource("app.css").toExternalForm();
         this.dashboard.getStylesheets().add(css);
 
         connectDB = parsedConnectDB;
 
-        Boolean isAdmin = false;
-
         if (accountType.equals("admin")){
-            isAdmin = true;
+            user = new AdminUser(db, username);
+            boolean isAdmin = true;
+            createSidebar(isAdmin);
+
         } if (accountType.equals("normal")){
-            isAdmin = false;
+            user = new User(db, username);
+            boolean isAdmin = false;
+            createSidebar(isAdmin);
+
         }
 
-        createSidebar(isAdmin, userID);
-
+        createProductsListScreen();
+        dash.getChildren().add(line);
 
         dashStage.setTitle("Chess Library System");
         dashStage.setResizable(false);
@@ -105,8 +125,12 @@ public class Dashboard {
 
     }
 
-    public void createSidebar (Boolean isAdmin, int userID){
-        Boolean userIsAdmin = isAdmin;
+    public void createSidebar (boolean isAdmin){
+        Boolean userIsAdmin = false;
+
+        if (user.getAccountType().equals("admin")) {
+            userIsAdmin = true;
+        }
 
         Pane sideBar = new Pane();
         sideBar.setStyle("-fx-background-color: #1A374D");
@@ -120,7 +144,6 @@ public class Dashboard {
         profileIconView.setLayoutX(99);
         profileIconView.setLayoutY(75);
 
-        Line line = new Line();
         line.setId("lineMyLoans");
         line.setStartX(382);
         line.setEndX(1375);
@@ -128,12 +151,16 @@ public class Dashboard {
         line.setEndY(300);
         line.setStrokeWidth(6);
 
-
-        if (userIsAdmin){
+        if (isAdmin){
             approvalsButton.setId("approvalsButton");
             approvalsButton.setFont(fonts.lemonMilkRegular22());
             approvalsButton.setLayoutX(30);
             approvalsButton.setLayoutY(420);
+
+            if (allRequests.size() > 0){
+                approvalsButton.setText("  approvals (" + allRequests.size() + ")" );
+            }
+
 
             Image approvalsIcon = new Image(this.getClass().getResource("circle-question-solid (1).png").toExternalForm());
             ImageView approvalsIconView = new ImageView(approvalsIcon);
@@ -147,15 +174,10 @@ public class Dashboard {
                 @Override
                 public void handle(MouseEvent mouseEvent) {
                     try {
-                        dash.getChildren().remove(myLoansScroll);
-                        dash.getChildren().remove(myLoansMainLabel);
-                        dash.getChildren().remove(myLoansSubLabel);
-                        dash.getChildren().remove(findItemsScroll);
-                        dash.getChildren().remove(findItemsMainLabel);
-                        dash.getChildren().remove(findItemsSubLabel);
-                        dash.getChildren().remove(line);
-
                         createApprovalsListScreen();
+
+                        myLoansButton.setFont(fonts.lemonMilkRegular22());
+                        findItemsButton.setFont(fonts.lemonMilkRegular22());
 
                         dash.getChildren().add(line);
                         line.setEndX(1327);
@@ -177,18 +199,9 @@ public class Dashboard {
 
         findItemsButton.setOnMouseClicked((new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                dash.getChildren().remove(myLoansScroll);
-                dash.getChildren().remove(myLoansMainLabel);
-                dash.getChildren().remove(myLoansSubLabel);
-                dash.getChildren().remove(approvalsScroll);
-                dash.getChildren().remove(approvalsMainLabel);
-                dash.getChildren().remove(approvalsSubLabel);
-                dash.getChildren().remove(line);
-
                 myLoansButton.setFont(fonts.lemonMilkRegular22());
                 approvalsButton.setFont(fonts.lemonMilkRegular22());
 
-                dash.getChildren().add(line);
                 line.setEndX(1375);
 
                 createProductsListScreen();
@@ -220,14 +233,6 @@ public class Dashboard {
 
         myLoansButton.setOnMouseClicked((new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                dash.getChildren().remove(findItemsScroll);
-                dash.getChildren().remove(findItemsMainLabel);
-                dash.getChildren().remove(findItemsSubLabel);
-                dash.getChildren().remove(approvalsScroll);
-                dash.getChildren().remove(approvalsMainLabel);
-                dash.getChildren().remove(approvalsSubLabel);
-                dash.getChildren().remove(line);
-
                 try {
                     createMyLoansScreen();
                     dash.getChildren().add(line);
@@ -242,16 +247,104 @@ public class Dashboard {
 
         }));
 
+        logoutButton.setId("findItemsButton");
+        logoutButton.setFont(fonts.lemonMilkRegular22());
+        logoutButton.setLayoutX(30);
+        logoutButton.setLayoutY(480);
+
+        Image logoutIcon = new Image(this.getClass().getResource("chess-king.png").toExternalForm());
+        ImageView logoutIconView = new ImageView(logoutIcon);
+
+        logoutIconView.setFitHeight(25);
+        logoutIconView.setFitWidth(20);
+        logoutButton.setGraphic(logoutIconView);
+        logoutButton.setContentDisplay(ContentDisplay.LEFT);
+
+        logoutButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                createLogoutScreen();
+            }
+        });
+
 
         sideBar.getChildren().add(findItemsButton);
         sideBar.getChildren().add(myLoansButton);
+        sideBar.getChildren().add(logoutButton);
         dash.getChildren().add(sideBar);
         dash.getChildren().add(profileIconView);
+    }
+
+    private void createLogoutScreen() {
+
+        Group logoutView = new Group();
+
+        logoutScene = new Scene(logoutView,  350, 150, Color.web("6998AB"));
+        String css = this.getClass().getResource("app.css").toExternalForm();
+        this.logoutScene.getStylesheets().add(css);
+
+        areYouSureLabel.setLayoutY(30);
+        areYouSureLabel.setPrefWidth(350);
+        areYouSureLabel.setAlignment(Pos.CENTER);
+        areYouSureLabel.setFont(fonts.lemonMilkMedium13());
+
+        yesButton.setLayoutX(205);
+        yesButton.setLayoutY(90);
+        yesButton.setPrefWidth(80);
+        yesButton.setId("loginButton");
+        yesButton.setFont(fonts.lemonMilkMedium16());
+        yesButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                logoutStage.close();
+                dashStage.close();
+
+                LoginScreen newLoginScreen = new LoginScreen(db);
+                newLoginScreen.CreateLoginScreen();
+            }
+        });
+
+        noButton.setLayoutX(65);
+        noButton.setLayoutY(90);
+        noButton.setPrefWidth(80);
+        noButton.setId("registerButton");
+        noButton.setFont(fonts.lemonMilkMedium16());
+        noButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                logoutStage.close();
+            }
+        });
+
+
+
+
+
+
+        logoutView.getChildren().add(areYouSureLabel);
+        logoutView.getChildren().add(yesButton);
+        logoutView.getChildren().add(noButton);
+
+
+        logoutStage.setTitle("Loan An Item");
+        logoutStage.setResizable(false);
+
+        logoutStage.setScene(logoutScene);
+        logoutStage.show();
+
     }
 
     public void createMyLoansScreen() throws ParseException {
         dash.getChildren().remove(findItemsScroll);
         dash.getChildren().remove(approvalsScroll);
+        dash.getChildren().remove(findItemsMainLabel);
+        dash.getChildren().remove(findItemsSubLabel);
+        dash.getChildren().remove(searchBar);
+        dash.getChildren().remove(searchLabel);
+        dash.getChildren().remove(approvalsMainLabel);
+        dash.getChildren().remove(approvalsSubLabel);
+        dash.getChildren().remove(line);
+
         myLoansButton.setFont(fonts.lemonMilkMedium22());
 
         myLoansMainLabel.setId("myLoansMainLabel");
@@ -276,14 +369,25 @@ public class Dashboard {
 
         dash.getChildren().add(myLoansMainLabel);
         dash.getChildren().add(myLoansSubLabel);
-//        dash.getChildren().add(magnifyingGlassView);
         dash.getChildren().add(myLoansScroll);
-
 
     }
 
     public void createProductsListScreen(){
+        productsToDisplay = db.getAllProducts();
+
+        dash.getChildren().remove(findItemsScroll);
+        dash.getChildren().remove(findItemsMainLabel);
+        dash.getChildren().remove(findItemsSubLabel);
+        dash.getChildren().remove(searchBar);
+        dash.getChildren().remove(searchLabel);
+        dash.getChildren().remove(approvalsScroll);
+        dash.getChildren().remove(approvalsMainLabel);
+        dash.getChildren().remove(approvalsSubLabel);
         dash.getChildren().remove(myLoansScroll);
+        dash.getChildren().remove(myLoansMainLabel);
+        dash.getChildren().remove(myLoansSubLabel);
+        dash.getChildren().remove(approvalsButton);
 
         findItemsButton.setFont(fonts.lemonMilkMedium22());
 
@@ -305,7 +409,31 @@ public class Dashboard {
         magnifyingGlassView.setLayoutY(70);
         magnifyingGlassView.setLayoutX(1350);
 
-        placeProdGrid(); //adds all items to the grid, then to the scroll pane
+        searchBar.setId("searchBar");
+        searchBar.setFont(fonts.lemonMilkMedium14());
+        searchBar.setLayoutY(250);
+        searchBar.setLayoutX(1200);
+        searchBar.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                String searchTerm = searchBar.getText();
+
+                List<List<String>> searchResults = db.searchForProductsLike(searchTerm);
+
+                if (!searchResults.isEmpty()){
+                    findItemsGrid.getChildren().clear();
+                    productsToDisplay = searchResults;
+                    placeProdGrid(productsToDisplay);
+                }
+            }
+        });
+
+        searchLabel.setFont(fonts.lemonMilkMedium14());
+        searchLabel.setLayoutY(255);
+        searchLabel.setLayoutX(1120);
+
+
+        placeProdGrid(productsToDisplay); //adds all items to the grid, then to the scroll pane
 
         findItemsScroll.setContent(findItemsGrid);
         findItemsScroll.setLayoutX(380);
@@ -318,15 +446,22 @@ public class Dashboard {
         dash.getChildren().add(findItemsMainLabel);
         dash.getChildren().add(findItemsSubLabel);
         dash.getChildren().add(findItemsScroll);
+        dash.getChildren().add(searchBar);
+        dash.getChildren().add(searchLabel);
 
 
     }
 
     public void createApprovalsListScreen() throws ParseException {
-        dash.getChildren().remove(findItemsMainLabel);
-        dash.getChildren().remove(findItemsSubLabel);
+        dash.getChildren().remove(myLoansScroll);
         dash.getChildren().remove(myLoansMainLabel);
         dash.getChildren().remove(myLoansSubLabel);
+        dash.getChildren().remove(findItemsScroll);
+        dash.getChildren().remove(findItemsMainLabel);
+        dash.getChildren().remove(findItemsSubLabel);
+        dash.getChildren().remove(searchBar);
+        dash.getChildren().remove(searchLabel);
+        dash.getChildren().remove(line);
 
         dash.getChildren().remove(findItemsScroll);
         dash.getChildren().remove(myLoansScroll);
@@ -360,23 +495,22 @@ public class Dashboard {
     }
 
 
-    public void placeProdGrid() {
-        List<List<String>> allProducts = db.getAllProducts();
+    public void placeProdGrid(List<List<String>> productsToPlace) {
 
         int column = 0;
         int row = 1;
 
-        for (int i = 0; i < allProducts.size() ; i++) {
+        for (int i = 0; i < productsToPlace.size() ; i++) {
 
-            String productID = allProducts.get(i).get(0);
-            String title = allProducts.get(i).get(1);
-            String category = allProducts.get(i).get(2);
-            String description = allProducts.get(i).get(3);
-            String totalStock = allProducts.get(i).get(4);
-            String numOnLoan = allProducts.get(i).get(5);
-            String imageName = allProducts.get(i).get(6);
+            String productID = productsToPlace.get(i).get(0);
+            String title = productsToPlace.get(i).get(1);
+            String category = productsToPlace.get(i).get(2);
+            String description = productsToPlace.get(i).get(3);
+            String totalStock = productsToPlace.get(i).get(4);
+            String numOnLoan = productsToPlace.get(i).get(5);
+            String imageName = productsToPlace.get(i).get(6);
 
-            ProductListing thisListing = new ProductListing(dashStage, db, user, productID, title, category, description, totalStock, numOnLoan, imageName);
+            ProductListing thisListing = new ProductListing(dashStage, db, this.username, productID, title, category, description, totalStock, numOnLoan, imageName);
             Pane listing = thisListing.createListing(dash);
 
 
@@ -398,7 +532,7 @@ public class Dashboard {
     }
 
     public void placeLoansGrid() throws ParseException {
-        List<List<String>> allLoans = db.getAllLoans(String.valueOf(user));
+        List<List<String>> allLoans = db.getAllLoans(String.valueOf(username));
 
         int column = 0;
         int row = 1;
@@ -410,7 +544,7 @@ public class Dashboard {
             String startDate = allLoans.get(i).get(2);
             String dueDate = allLoans.get(i).get(3);
 
-            LoanListing thisListing = new LoanListing(dashStage, db, user, loanID, productID, startDate, dueDate);
+            LoanListing thisListing = new LoanListing(dashStage, db, this.username, loanID, productID, startDate, dueDate);
             Pane loan = thisListing.createLoanElement(dash);
 
             if (column == 3) {
@@ -436,7 +570,6 @@ public class Dashboard {
         headerPane.getChildren().remove(actionHeaderLabel);
         approvalsGrid.getChildren().remove(headerPane);
 
-        List<List<String>> allRequests = db.getAllAccountRequests();
 
         System.out.println(allRequests);
 
@@ -478,7 +611,7 @@ public class Dashboard {
             String requestedPassword = allRequests.get(i).get(3);
             int requestedAdminAccess = Integer.parseInt(allRequests.get(i).get(4));
 
-            ApprovalListing thisListing = new ApprovalListing(dashStage, db, this.user, approvalID, requestedID, requestedEmail, requestedPassword, requestedAdminAccess);
+            ApprovalListing thisListing = new ApprovalListing(dashStage, db, this.username, approvalID, requestedID, requestedEmail, requestedPassword, requestedAdminAccess);
             Pane approval = thisListing.createListing(dash);
 
             approvalsGrid.add(approval, 1, row++); //(child,column,row)

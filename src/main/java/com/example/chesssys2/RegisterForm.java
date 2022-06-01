@@ -21,31 +21,31 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class RegisterForm {
-    private Group reg = new Group();
-    private Scene registerFormScene = new Scene(reg,  500, 420, Color.web("B1D0E0"));
-    private Stage stage = new Stage();
+    private final Group reg = new Group();
+    private final Scene registerFormScene = new Scene(reg,  500, 420, Color.web("B1D0E0"));
+    private final Stage stage = new Stage();
 
-    private Database db;
-    private Connection connectDB;
+    private final Database db;
+    private final Connection connectDB;
 
-    private TextField newUsernameField = new TextField();
+    private final TextField newUsernameField = new TextField();
 
-    private TextField newEmailField = new TextField();
-    private PasswordField newPasswordField = new PasswordField();
-    private PasswordField retypedPasswordField = new PasswordField();
-    private Button submitButton = new Button("submit");
+    private final TextField newEmailField = new TextField();
+    private final PasswordField newPasswordField = new PasswordField();
+    private final PasswordField retypedPasswordField = new PasswordField();
+    private final Button submitButton = new Button("submit");
 
-    private CheckBox adminRequestBox = new CheckBox("request admin access");
+    private final CheckBox adminRequestBox = new CheckBox("request admin access");
 
-    private Label emtpyFieldsErrorLabel = new Label("Please fill in all fields before submitting.");
-    private Label unmatchedPasswordsLabel = new Label("Passwords do not match. Please try again.");
-    private Label usernameAlreadyExistsError = new Label("That username is taken - please choose another");
-    private Label incorrectEmailFormatError = new Label("Please provide a valid email");
-    private Label incorrectUsernameFormatError = new Label("Please only use numbers for your requested ID");
+    private final Label emtpyFieldsErrorLabel = new Label("Please fill in all fields before submitting.");
+    private final Label unmatchedPasswordsLabel = new Label("Passwords do not match. Please try again.");
+    private final Label usernameAlreadyExistsError = new Label("That username is taken - please choose another");
+    private final Label incorrectEmailFormatError = new Label("Please provide a valid email");
+    private final Label incorrectUsernameFormatError = new Label("Please only use numbers for your requested ID");
 
     private Boolean didPasswordsMatch = false;
 
-    private FontLoader fonts = new FontLoader();
+    private final FontLoader fonts = new FontLoader();
 
     public RegisterForm (Database parsedDB, Stage oldStage) {
         Stage prevStage = oldStage;
@@ -90,7 +90,7 @@ public class RegisterForm {
         dropShadow.setColor(Color.color(0.4, 0.5, 0.5));
 
 
-        Label createAccountLabel = new Label("create your account");
+        Label createAccountLabel = new Label("register your account");
         createAccountLabel.setId("createAccountLabel");
         createAccountLabel.setFont(fonts.lemonMilkMedium30());
         createAccountLabel.setMinWidth(500);
@@ -141,21 +141,12 @@ public class RegisterForm {
                 System.out.println("Accounts that are the same: " + accountsThatEqualUsername);
 
 
-
-                if (accountsThatEqualUsername.size() > 0) {
-                    doesUsernameAlreadyExist = true;
-                } else {
-                    doesUsernameAlreadyExist = false;
-                }
+                doesUsernameAlreadyExist = accountsThatEqualUsername.size() > 0;
 
                 System.out.println(allAccounts);
 
 
-                if (chosenPassword.equals(repeatedPassword)) {
-                    didPasswordsMatch = true;
-                } else {
-                    didPasswordsMatch = false;
-                }
+                didPasswordsMatch = chosenPassword.equals(repeatedPassword);
 
 
                 //The following, verifies that all fields are filled correctly
@@ -196,10 +187,12 @@ public class RegisterForm {
                     reg.getChildren().remove(incorrectEmailFormatError);
                     reg.getChildren().remove(incorrectUsernameFormatError);
 
-                    incorrectUsernameFormatError.setId("incorrectUsernameFormatError");
-                    incorrectUsernameFormatError.setFont(fonts.lemonMilkMedium12());
+                    incorrectUsernameFormatError.setId("incorrectEmailFormatError");
                     incorrectUsernameFormatError.setLayoutX(105);
-                    incorrectUsernameFormatError.setLayoutY(12);
+                    incorrectUsernameFormatError.setFont(fonts.lemonMilkRegular13());
+                    incorrectUsernameFormatError.setLayoutY(20);
+                    incorrectUsernameFormatError.setMinWidth(500);
+                    incorrectUsernameFormatError.setAlignment(Pos.CENTER);
                     reg.getChildren().add(incorrectUsernameFormatError);
 
                     validEntries = false;
@@ -231,10 +224,11 @@ public class RegisterForm {
                     reg.getChildren().remove(incorrectEmailFormatError);
                     reg.getChildren().remove(incorrectUsernameFormatError);
 
-                    unmatchedPasswordsLabel.setId("unmatchedPasswordsError");
-                    unmatchedPasswordsLabel.setFont(fonts.lemonMilkMedium12());
-                    unmatchedPasswordsLabel.setLayoutX(105);
-                    unmatchedPasswordsLabel.setLayoutY(12);
+                    unmatchedPasswordsLabel.setId("incorrectEmailFormatError");
+                    unmatchedPasswordsLabel.setFont(fonts.lemonMilkRegular13());
+                    unmatchedPasswordsLabel.setLayoutY(20);
+                    unmatchedPasswordsLabel.setMinWidth(500);
+                    unmatchedPasswordsLabel.setAlignment(Pos.CENTER);
                     reg.getChildren().add(unmatchedPasswordsLabel);
 
                     validEntries = false;
@@ -284,6 +278,7 @@ public class RegisterForm {
 
         //Set and place the new username field
         newUsernameField.setId("newUsername");
+        newUsernameField.setPromptText("[0-9]");
         newUsernameField.setAlignment(Pos.CENTER_LEFT);
         newUsernameField.setLayoutX(200);
         newUsernameField.setLayoutY(130);
@@ -294,6 +289,7 @@ public class RegisterForm {
 
         //Set and place the new email field
         newEmailField.setId("newEmail");
+        newEmailField.setPromptText("example@example.com");
         newEmailField.setAlignment(Pos.CENTER_LEFT);
         newEmailField.setLayoutX(200);
         newEmailField.setLayoutY(170);
@@ -385,7 +381,6 @@ public class RegisterForm {
         backButton.setOnMouseClicked((new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 //System.out.println("Hello World");
-                ;
                 stage.close();
                 Database updatedDB = new Database();
                 updatedDB.setupDataBase();
